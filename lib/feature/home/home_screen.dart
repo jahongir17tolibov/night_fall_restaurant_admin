@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:night_fall_restaurant_admin/feature/home/bloc/home_bloc.dart';
+import 'package:night_fall_restaurant_admin/feature/home/widget/order_products_bottom_sheet.dart';
 import 'package:night_fall_restaurant_admin/utils/helpers.dart';
+import 'package:night_fall_restaurant_admin/utils/ui_components/error_widget.dart';
 import 'package:night_fall_restaurant_admin/utils/ui_components/standart_text.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,12 +16,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    context.read<HomeBloc>().add(HomeOnGetOrdersListEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () async {},
           icon: Icon(
             Icons.light_mode_rounded,
             color: Theme.of(context).colorScheme.onSurface,
@@ -35,16 +44,81 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-          physics: const RangeMaintainingScrollPhysics(),
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return _ordersListItem();
-          }),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            context.read<HomeBloc>().add(HomeOnGetOrdersListEvent());
+          },
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          strokeWidth: 3.0,
+          child: BlocConsumer<HomeBloc, HomeState>(
+            buildWhen: (previous, current) => current is! HomeActionState,
+            listenWhen: (previous, current) => current is HomeActionState,
+            listener: (context, state) async {
+              if (state is HomeShowModalBottomSheetActionState) {
+                await showModalBottomSheet(
+                  context: context,
+                  useSafeArea: true,
+                  builder: (context) => SafeArea(
+                    child: OrderProductsModalBottomSheet(
+                      orderProduct: state.orderProducts,
+                      orderTotalPrice: state.totalPrice,
+                    ),
+                  ),
+                );
+              }
+            },
+            builder: (context, state) {
+              switch (state) {
+                case HomeLoadingState():
+                  return Center(
+                    child: CupertinoActivityIndicator(
+                      color: Theme.of(context).colorScheme.secondary,
+                      radius: 25.0,
+                    ),
+                  );
+                case HomeSuccessState():
+                  {
+                    return ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: state.ordersList.length,
+                        itemBuilder: (context, index) {
+                          final orderItem = state.ordersList[index];
+                          return GestureDetector(
+                            onTap: () {
+                              context
+                                  .read<HomeBloc>()
+                                  .add(HomeOnGetOrderProductsEvent(
+                                    orderId: orderItem.orderId,
+                                    totalPrice: orderItem.totalPrice,
+                                  ));
+                            },
+                            child: _ordersListItem(
+                              tableNumber: orderItem.tableNumber,
+                              sentDateTime: orderItem.sendTime,
+                              uniqueOrderId: orderItem.orderId,
+                            ),
+                          );
+                        });
+                  }
+                case HomeErrorState():
+                  return errorWidget(state.error, context);
+                default:
+                  return Container();
+              }
+            },
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _ordersListItem() {
+  Widget _ordersListItem({
+    required String tableNumber,
+    required String uniqueOrderId,
+    required String sentDateTime,
+  }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       color: Theme.of(context).colorScheme.surface,
@@ -62,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Container(
             width: 7,
-            height: 110,
+            height: fillMaxHeight(context) * 0.10,
             margin: const EdgeInsets.only(
               top: 20.0,
               bottom: 20.0,
@@ -80,29 +154,34 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: SizedBox(
-                height: 110.0,
+                width: fillMaxWidth(context),
+                height: fillMaxHeight(context) * 0.15,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextView(
-                      text: 'Table: 5',
+                      text: 'Table: $tableNumber',
                       textSize: 32.0,
+                      maxLines: 1,
                       textColor: Theme.of(context).colorScheme.onSurface,
                     ),
-                    const SizedBox(height: 10),
+                    const Spacer(),
                     TextView(
-                      text: 'Buyurtma: no2.34210623',
+                      text: 'Buyurtma: $uniqueOrderId',
                       textSize: 16.0,
+                      maxLines: 1,
                       textColor: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     TextView(
-                      text: "21:37 11.10.2023",
+                      text: sentDateTime,
                       textSize: 16.0,
                       weight: FontWeight.w700,
+                      maxLines: 1,
                       textColor: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
+                    const SizedBox(height: 14.0),
                   ],
                 ),
               ),

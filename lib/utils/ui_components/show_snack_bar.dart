@@ -7,6 +7,7 @@ void showSnackBar(String message, BuildContext context) {
       content: TextView(
         text: message,
         textColor: Theme.of(context).colorScheme.surface,
+        maxLines: 3,
       ),
       backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
       shape: RoundedRectangleBorder(

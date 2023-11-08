@@ -1,12 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:night_fall_restaurant_admin/core/theme/theme.dart';
+import 'package:night_fall_restaurant_admin/feature/add_new_product/bloc/add_new_product_bloc.dart';
+import 'package:night_fall_restaurant_admin/feature/editing_product/bloc/editing_product_bloc.dart';
+import 'package:night_fall_restaurant_admin/feature/home/bloc/home_bloc.dart';
 import 'package:night_fall_restaurant_admin/feature/home/home_screen.dart';
+import 'package:night_fall_restaurant_admin/feature/products/bloc/products_bloc.dart';
 import 'package:night_fall_restaurant_admin/feature/products/products_screen.dart';
 import 'package:night_fall_restaurant_admin/feature/splash/splash_screen.dart';
-import 'package:night_fall_restaurant_admin/utils/helpers.dart';
 
 import 'core/navigation/router.dart';
+import 'di.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -14,6 +19,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await setupDependencies();
   runApp(const MyApp());
 }
 
@@ -22,18 +28,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateRoute: RouterNavigation.generateRoute,
-      debugShowCheckedModeBanner: false,
-      theme: appLightTheme,
-      darkTheme: appDarkTheme,
-      home: const SplashScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeBloc>(create: (context) => getIt<HomeBloc>()),
+        BlocProvider<ProductsBloc>(create: (context) => getIt<ProductsBloc>()),
+        BlocProvider<EditingProductBloc>(
+          create: (context) => getIt<EditingProductBloc>(),
+        ),
+        BlocProvider<AddNewProductBloc>(
+          create: (context) => getIt<AddNewProductBloc>(),
+        ),
+      ],
+      child: MaterialApp(
+        onGenerateRoute: RouterNavigation.generateRoute,
+        debugShowCheckedModeBanner: false,
+        theme: appLightTheme,
+        darkTheme: appDarkTheme,
+        home: const SplashScreen(),
+      ),
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
+  static const String mainRoute = '/main';
+
   const MainScreen({super.key});
+
+  static Future<void> open(BuildContext context) async {
+    await Navigator.of(context).popAndPushNamed(mainRoute);
+  }
 
   @override
   State<MainScreen> createState() => _MainScreenState();
