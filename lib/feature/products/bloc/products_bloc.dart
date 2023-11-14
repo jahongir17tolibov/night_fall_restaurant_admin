@@ -64,12 +64,20 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     ProductOnDeleteEvent event,
     Emitter<ProductsState> emit,
   ) async {
-    await deleteProductUseCase.call(event.productName);
-    emit(ProductsLoadingState());
-    await _getMenuProducts(event, emit);
-    emit(
-      ProductsShowSnackMessageActionState("${event.productName} o'chirildi"),
-    );
+    try {
+      final hasConnection = await InternetConnectionChecker().hasConnection;
+      if (hasConnection) {
+        await deleteProductUseCase.call(event.productName);
+        emit(ProductsLoadingState());
+        await _getMenuProducts(event, emit);
+        emit(ProductsShowSnackMessageActionState(
+            "${event.productName} o'chirildi"));
+      } else {
+        emit(ProductsShowSnackMessageActionState("Check internet connection"));
+      }
+    } on Exception catch (e) {
+      emit(ProductsErrorState(e.toString()));
+    }
   }
 
   Future<void> navigateToEditingScreenEvent(

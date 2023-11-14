@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 class MenuList {
+  final String fireId;
   final String name;
   final String image;
   final String price;
@@ -8,6 +9,7 @@ class MenuList {
   final String product_category_id;
 
   MenuList({
+    required this.fireId,
     required this.name,
     required this.image,
     required this.price,
@@ -16,6 +18,7 @@ class MenuList {
   });
 
   Map<String, dynamic> toMap() => <String, dynamic>{
+        'fireId': fireId,
         'name': name,
         'image': image,
         'price': price,
@@ -24,6 +27,7 @@ class MenuList {
       };
 
   factory MenuList.fromMap(Map<String, dynamic> map) => MenuList(
+        fireId: map['fireId'],
         name: map['name'],
         image: map['image'],
         price: map['price'],
@@ -36,6 +40,7 @@ class MenuList {
       identical(this, other) ||
       other is MenuList &&
           runtimeType == other.runtimeType &&
+          fireId == other.fireId &&
           name == other.name &&
           image == other.image &&
           price == other.price &&
@@ -44,6 +49,7 @@ class MenuList {
 
   @override
   int get hashCode =>
+      fireId.hashCode ^
       name.hashCode ^
       image.hashCode ^
       price.hashCode ^

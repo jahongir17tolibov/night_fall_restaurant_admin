@@ -3,6 +3,7 @@ package com.example.night_fall_restaurant_admin.data.remote.firestore
 import android.net.Uri
 import com.example.night_fall_restaurant_admin.data.remote.model.SendProductModel
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.Flow
@@ -17,14 +18,20 @@ class FireStoreServiceImpl : FireStoreService {
     private val fireStoreInstance = FirebaseFirestore.getInstance()
 
     companion object {
-        private const val COLLECTION_NAME = "test_collection"
-        private const val DOC_NAME = "test_collection"
+        private const val MENU_COLLECTION_PATH = "products_menu"
+        private const val MENU_DOC_PATH = "1_categories"
+        private const val MENU_PRODUCTS_FIELD = "menu_products"
     }
 
     override suspend fun sendDataToFireStore(sendProductModel: SendProductModel) {
         try {
-            val product = sendProductModel.toHashMap()
-            fireStoreInstance.collection(COLLECTION_NAME).add(product).await()
+            val productMap = sendProductModel.toHashMap()
+
+            val documentReference = fireStoreInstance
+                .collection(MENU_COLLECTION_PATH)
+                .document(MENU_DOC_PATH)
+
+            documentReference.update(MENU_PRODUCTS_FIELD, FieldValue.arrayUnion(productMap)).await()
         } catch (e: Exception) {
             throw Exception(e)
         }
@@ -32,7 +39,7 @@ class FireStoreServiceImpl : FireStoreService {
 
     override suspend fun getDataFromFireStore(): Flow<List<SendProductModel>> = flow {
         val productsList: ArrayList<SendProductModel> = arrayListOf()
-        val docRef = fireStoreInstance.collection(COLLECTION_NAME)
+        val docRef = fireStoreInstance.collection(MENU_COLLECTION_PATH)
         val listener = docRef.get().addOnSuccessListener { query ->
             query.forEach { docs ->
                 val products = docs.toObject(SendProductModel::class.java)

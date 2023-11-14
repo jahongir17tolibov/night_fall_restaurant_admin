@@ -60,6 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 await showModalBottomSheet(
                   context: context,
                   useSafeArea: true,
+                  enableDrag: true,
+                  showDragHandle: true,
                   builder: (context) => SafeArea(
                     child: OrderProductsModalBottomSheet(
                       orderProduct: state.orderProducts,

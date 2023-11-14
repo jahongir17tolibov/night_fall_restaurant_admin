@@ -22,6 +22,12 @@ class HomeErrorState extends HomeState {
 @immutable
 sealed class HomeActionState extends HomeState {}
 
+class ThemeChangeState extends HomeActionState {
+  final bool isDark;
+
+  ThemeChangeState(this.isDark);
+}
+
 class HomeShowModalBottomSheetActionState extends HomeActionState {
   final List<OrderProductsEntity> orderProducts;
   final String totalPrice;

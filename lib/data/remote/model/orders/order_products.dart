@@ -1,5 +1,6 @@
 class OrderProducts {
   final String orderId;
+  final String fireId;
   final String productName;
   final String price;
   final String weight;
@@ -8,6 +9,7 @@ class OrderProducts {
 
   OrderProducts({
     required this.orderId,
+    required this.fireId,
     required this.productName,
     required this.price,
     required this.weight,
@@ -17,6 +19,7 @@ class OrderProducts {
 
   Map<String, dynamic> toMap() => <String, dynamic>{
         'orderProductId': orderId,
+        'fireId': fireId,
         'productName': productName,
         'image': image,
         'price': price,
@@ -26,6 +29,7 @@ class OrderProducts {
 
   factory OrderProducts.fromMap(Map<String, dynamic> map) => OrderProducts(
         orderId: map['orderId'],
+        fireId: map['fireId'],
         productName: map['productName'],
         image: map['image'],
         price: map['price'],
@@ -49,6 +53,7 @@ class OrderProducts {
       other is OrderProducts &&
           runtimeType == other.runtimeType &&
           orderId == other.orderId &&
+          fireId == other.fireId &&
           productName == other.productName &&
           image == other.image &&
           price == other.price &&
@@ -58,6 +63,7 @@ class OrderProducts {
   @override
   int get hashCode =>
       orderId.hashCode ^
+      fireId.hashCode ^
       productName.hashCode ^
       weight.hashCode ^
       image.hashCode ^

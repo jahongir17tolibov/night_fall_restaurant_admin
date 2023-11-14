@@ -44,7 +44,11 @@ Future<void> setupDependencies() async {
       ));
 
   getIt.registerFactory<EditingProductBloc>(() => EditingProductBloc(
-      getSingleProductUseCase: getIt<GetSingleProductUseCase>()));
+        getSingleProductUseCase: getIt<GetSingleProductUseCase>(),
+        getMenuCategoriesUseCase: getIt<GetMenuCategoriesUseCase>(),
+        updateProduct: getIt<UpdateMenuProductFromFireStoreUseCase>(),
+        uploadAndGetImage: getIt<UploadAndGetImageToFireStoreUseCase>(),
+      ));
 
   getIt.registerFactory<AddNewProductBloc>(() => AddNewProductBloc(
         getMenuCategoriesUseCase: getIt<GetMenuCategoriesUseCase>(),

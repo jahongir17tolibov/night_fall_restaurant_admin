@@ -3,7 +3,11 @@ part of 'add_new_product_bloc.dart';
 @immutable
 sealed class AddNewProductEvent {}
 
-class AddNewProductOnLoadCategoriesEvent extends AddNewProductEvent {}
+class AddNewProductOnLoadCategoriesEvent extends AddNewProductEvent {
+  final int categoryIndex;
+
+  AddNewProductOnLoadCategoriesEvent({this.categoryIndex = 0});
+}
 
 class AddNewProductOnSendEvent extends AddNewProductEvent {
   final File imageFile;
@@ -15,6 +19,12 @@ class AddNewProductOnSendEvent extends AddNewProductEvent {
 class AddNewProductOnShowImagePickerEvent extends AddNewProductEvent {}
 
 class AddNewProductOnNavigateBackEvent extends AddNewProductEvent {}
+
+class AddNewProductOnShowCategoryPickerEvent extends AddNewProductEvent {
+  final List<String> categories;
+
+  AddNewProductOnShowCategoryPickerEvent(this.categories);
+}
 
 class AddNewProductOnShowSnackMessageEvent extends AddNewProductEvent {
   final String message;

@@ -47,6 +47,7 @@ class AppDataBase {
                     ${OrderProductsEntity.CM_ID} $idType,
                     ${OrderProductsEntity.CM_ORDER_UNIQUE_ID} $stringType,
                     ${OrderProductsEntity.CM_PRODUCT_NAME} $stringType,
+                    ${OrderProductsEntity.CM_ORDER_PRODUCT_FIRE_ID} $stringType,
                     ${OrderProductsEntity.CM_IMAGE} $stringType,
                     ${OrderProductsEntity.CM_PRICE} $stringType,
                     ${OrderProductsEntity.CM_WEIGHT} $stringType,
@@ -57,6 +58,7 @@ class AppDataBase {
       CREATE TABLE ${MenuProductsEntity.TABLE_NAME}(
                       ${MenuProductsEntity.CM_ID} $idType,
                       ${MenuProductsEntity.CM_PRODUCT_NAME} $stringType,
+                      ${MenuProductsEntity.CM_PRODUCT_FIRE_ID} $stringType,
                       ${MenuProductsEntity.CM_IMAGE} $stringType,
                       ${MenuProductsEntity.CM_PRICE} $stringType,
                       ${MenuProductsEntity.CM_WEIGHT} $stringType,

@@ -5,7 +5,11 @@ sealed class HomeEvent {}
 
 class HomeOnGetOrdersListEvent extends HomeEvent {}
 
-class ReloadEvent extends HomeEvent {}
+class ThemeChangedEvent extends HomeEvent {
+  final bool isDark;
+
+  ThemeChangedEvent(this.isDark);
+}
 
 class HomeOnGetOrderProductsEvent extends HomeEvent {
   final String orderId;

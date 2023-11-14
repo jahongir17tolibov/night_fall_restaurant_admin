@@ -8,9 +8,15 @@ class AddNewProductLoadingState extends AddNewProductState {
 }
 
 class AddNewProductSuccessState extends AddNewProductState {
-  final List<MenuCategoriesEntity> categories;
+  final List<String> categoryNames;
+  final List<String> categoryIds;
+  final int selectedCategoryItem;
 
-  AddNewProductSuccessState(this.categories) : super();
+  AddNewProductSuccessState({
+    required this.categoryNames,
+    required this.categoryIds,
+    required this.selectedCategoryItem,
+  }) : super();
 }
 
 class AddNewProductSentSuccessState extends AddNewProductState {
@@ -42,6 +48,12 @@ class AddNewProductSendDataToNativeActionState
 class AddNewProductNavigateBackActionState extends AddNewProductActionState {}
 
 class AddNewProductShowImagePickerState extends AddNewProductActionState {}
+
+class ShowCategoryPickerActionState extends AddNewProductActionState {
+  final List<String> categories;
+
+  ShowCategoryPickerActionState(this.categories);
+}
 
 class AddNewProductShowSnackMessageState extends AddNewProductActionState {
   final String message;

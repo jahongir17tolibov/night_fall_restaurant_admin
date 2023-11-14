@@ -15,52 +15,46 @@ class OrderProductsModalBottomSheet extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => DraggableScrollableSheet(
-        expand: false,
-        maxChildSize: 0.9,
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        builder: (context, scrollController) => Flexible(
-          child: ListView.builder(
-            controller: scrollController,
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.all(12.0),
-            itemCount: orderProduct.length + 1,
-            itemBuilder: (context, index) {
-              if (index == orderProduct.length) {
-                return Column(
-                  children: <Widget>[
-                    const SizedBox(height: 12.0),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        TextView(
-                          text: "Umumiy narx:",
-                          textColor: Theme.of(context).colorScheme.onSurface,
-                          maxLines: 1,
-                          weight: FontWeight.w500,
-                          textSize: 20.0,
-                        ),
-                        const SizedBox(width: 10.0),
-                        TextView(
-                          text: orderTotalPrice,
-                          textColor: Theme.of(context).colorScheme.onSurface,
-                          maxLines: 1,
-                          weight: FontWeight.w500,
-                          textSize: 20.0,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12.0),
-                  ],
-                );
-              } else {
-                final item = orderProduct[index];
-                return _orderProductListViewItem(context, item);
-              }
-            },
-          ),
+  Widget build(BuildContext context) => BottomSheet(
+        onClosing: () {},
+        builder: (context) => ListView.builder(
+          physics: const ClampingScrollPhysics(),
+          padding: const EdgeInsets.all(12.0),
+          itemCount: orderProduct.length + 1,
+          itemBuilder: (context, index) {
+            if (index == orderProduct.length) {
+              return Column(
+                children: <Widget>[
+                  const SizedBox(height: 12.0),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      TextView(
+                        text: "Umumiy narx:",
+                        textColor: Theme.of(context).colorScheme.onSurface,
+                        maxLines: 1,
+                        weight: FontWeight.w500,
+                        textSize: 20.0,
+                      ),
+                      const SizedBox(width: 10.0),
+                      TextView(
+                        text: orderTotalPrice,
+                        textColor: Theme.of(context).colorScheme.onSurface,
+                        maxLines: 1,
+                        weight: FontWeight.w500,
+                        textSize: 20.0,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12.0),
+                ],
+              );
+            } else {
+              final item = orderProduct[index];
+              return _orderProductListViewItem(context, item);
+            }
+          },
         ),
       );
 
@@ -82,7 +76,7 @@ class OrderProductsModalBottomSheet extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.0),
           ),
           title: TextView(
-            text: orderProduct.fromOrderUniqueId,
+            text: orderProduct.productName,
             textColor: Theme.of(context).colorScheme.onSurface,
             textSize: 22.0,
             maxLines: 1,

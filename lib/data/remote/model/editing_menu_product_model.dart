@@ -1,6 +1,7 @@
 import 'package:night_fall_restaurant_admin/data/local/entities/menu_products_list_entity.dart';
 
 class EditingMenuProductsModel {
+  final String fireId;
   final String name;
   final String image;
   final String price;
@@ -8,6 +9,7 @@ class EditingMenuProductsModel {
   final String productCategoryId;
 
   EditingMenuProductsModel({
+    required this.fireId,
     required this.name,
     required this.image,
     required this.price,
@@ -16,6 +18,7 @@ class EditingMenuProductsModel {
   });
 
   Map<String, dynamic> toMap() => <String, dynamic>{
+        'fireId': fireId,
         'name': name,
         'image': image,
         'price': price,
@@ -25,6 +28,7 @@ class EditingMenuProductsModel {
 
   factory EditingMenuProductsModel.fromMap(Map<String, dynamic> map) =>
       EditingMenuProductsModel(
+        fireId: map['fireId'],
         name: map['name'],
         image: map['image'],
         price: map['price'],
@@ -36,6 +40,7 @@ class EditingMenuProductsModel {
     required MenuProductsEntity menuProductsEntity,
   }) =>
       EditingMenuProductsModel(
+        fireId: menuProductsEntity.fireId.toString(),
         name: menuProductsEntity.name,
         image: menuProductsEntity.image,
         price: menuProductsEntity.price,

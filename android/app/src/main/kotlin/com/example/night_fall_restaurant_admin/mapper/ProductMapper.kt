@@ -5,6 +5,7 @@ import com.example.night_fall_restaurant_admin.data.remote.model.SendProductMode
 
 fun SendProductModel.toProductEntity(): ProductEntity = ProductEntity(
     name = name!!,
+    fireId = fireId!!,
     image = image!!,
     price = price!!,
     weight = weight!!,
@@ -13,6 +14,7 @@ fun SendProductModel.toProductEntity(): ProductEntity = ProductEntity(
 
 fun ProductEntity.toSendProducts(): SendProductModel = SendProductModel(
     name = name,
+    fireId = fireId,
     image = image,
     price = price,
     weight = weight,

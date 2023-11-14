@@ -63,6 +63,7 @@ class MenuProductsDao {
       String sqlQuery = """
     UPDATE ${MenuProductsEntity.TABLE_NAME} 
         SET ${MenuProductsEntity.CM_PRODUCT_NAME} = '${menuList.name}',
+            ${MenuProductsEntity.CM_PRODUCT_FIRE_ID} = '${menuList.fireId}',
             ${MenuProductsEntity.CM_PRICE} = '${menuList.price}',
             ${MenuProductsEntity.CM_IMAGE} = '${menuList.image}',
             ${MenuProductsEntity.CM_WEIGHT} = '${menuList.weight}',
@@ -80,8 +81,8 @@ class MenuProductsDao {
       String sqlQuery = """
     UPDATE ${MenuCategoriesEntity.TABLE_NAME} 
         SET ${MenuCategoriesEntity.CM_CATEGORY_NAME} = '${categories.categoryName}',
-            ${MenuCategoriesEntity.CM_CATEGORY_ID} = '${categories.categoryId}',
-      WHERE ${MenuCategoriesEntity.CM_CATEGORY_NAME} = '${categories.categoryName}',
+            ${MenuCategoriesEntity.CM_CATEGORY_ID} = '${categories.categoryId}'
+      WHERE ${MenuCategoriesEntity.CM_CATEGORY_NAME} = '${categories.categoryName}'
           """;
       await database.rawQuery(sqlQuery);
     } catch (_) {

@@ -60,6 +60,7 @@ class MainActivity : FlutterActivity() {
 
             if (call.method == INVOKE_METHOD_TEXT) {
                 val name = call.argument<String>(SendProductModel.NAME) ?: "name"
+                val fireId = call.argument<String>(SendProductModel.FIRE_ID) ?: "fireId"
                 val image = call.argument<String>(SendProductModel.IMAGE) ?: "image"
                 val price = call.argument<String>(SendProductModel.PRICE) ?: "price"
                 val weight = call.argument<String>(SendProductModel.WEIGHT) ?: "weight"
@@ -67,6 +68,7 @@ class MainActivity : FlutterActivity() {
 
                 val product = productModel.copy(
                     name = name,
+                    fireId = fireId,
                     price = price,
                     image = image,
                     weight = weight,

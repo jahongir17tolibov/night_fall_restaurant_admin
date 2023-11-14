@@ -15,6 +15,8 @@ import 'package:night_fall_restaurant_admin/utils/ui_components/show_snack_bar.d
 import 'package:night_fall_restaurant_admin/utils/ui_components/standart_text.dart';
 import 'package:number_text_input_formatter/number_text_input_formatter.dart';
 
+import '../../utils/ui_components/lottie_when_success.dart';
+
 class AddNewProductScreen extends StatefulWidget {
   static const String addNewProductRoute = "/addNewProduct";
 
@@ -46,6 +48,8 @@ class _AddNewProductState extends State<AddNewProductScreen>
 
   @override
   Widget build(BuildContext context) {
+    _selectedCategory =
+        context.watch<AddNewProductBloc>().selectedCategoryIndex;
     _nameEditText =
         context.watch<AddNewProductBloc>().nameEditingController.text;
     _priceEditText =
@@ -77,10 +81,6 @@ class _AddNewProductState extends State<AddNewProductScreen>
             if (state is AddNewProductLoadingState) {
               return const Center(child: CupertinoActivityIndicator());
             } else if (state is AddNewProductSuccessState) {
-              final List<String> categoryNames =
-                  state.categories.map((e) => e.categoryName).toList();
-              final List<String> categoryIds =
-                  state.categories.map((e) => e.categoryId).toList();
               return SafeArea(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -135,7 +135,7 @@ class _AddNewProductState extends State<AddNewProductScreen>
                             .nameEditingController,
                       ),
                       const SizedBox(height: 24),
-                      _selectCategoryButton(categoryNames),
+                      _selectCategoryButton(state.categoryNames),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -203,47 +203,8 @@ class _AddNewProductState extends State<AddNewProductScreen>
                         ],
                       ),
                       SizedBox(height: fillMaxHeight(context) * 0.17),
-                      Center(
-                        child: MaterialButton(
-                          onPressed: (_selectedImage != null &&
-                                  _nameEditText.isNotEmpty &&
-                                  _priceEditText.isNotEmpty &&
-                                  _weightEditText.isNotEmpty)
-                              ? () {
-                                  context
-                                      .read<AddNewProductBloc>()
-                                      .add(AddNewProductOnSendEvent(
-                                        _selectedImage!,
-                                        categoryIds
-                                            .elementAt(_selectedCategory),
-                                      ));
-                                }
-                              : null,
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          minWidth: fillMaxWidth(context) * 0.77,
-                          height: fillMaxHeight(context) * 0.05,
-                          elevation: 4.0,
-                          disabledColor:
-                              Theme.of(context).colorScheme.surfaceVariant,
-                          disabledTextColor:
-                              Theme.of(context).colorScheme.onSurfaceVariant,
-                          disabledElevation: 2.0,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSecondaryContainer,
-                                width: 2.0),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: TextView(
-                            text: "Add product",
-                            textColor: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer,
-                          ),
-                        ),
+                      _addProductButton(
+                        state.categoryIds.elementAt(_selectedCategory),
                       ),
                     ],
                   ),
@@ -252,37 +213,10 @@ class _AddNewProductState extends State<AddNewProductScreen>
             } else if (state is AddNewProductErrorState) {
               return errorWidget(state.error, context);
             } else if (state is AddNewProductSentSuccessState) {
-              return Center(
-                child: SizedBox(
-                  width: fillMaxWidth(context),
-                  height: fillMaxHeight(context) * 0.5,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Lottie.asset(
-                        state.lottiePath,
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.fill,
-                        repeat: false,
-                      ),
-                      const SizedBox(height: 80),
-                      Expanded(
-                        child: Text(
-                          state.statusText,
-                          style: const TextStyle(
-                              color: Colors.green,
-                              fontSize: 24.0,
-                              fontFamily: 'Ktwod'),
-                          maxLines: 3,
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+              return showWhenAddedSuccessLottie(
+                state.lottiePath,
+                state.statusText,
+                context,
               );
             }
             return Container();
@@ -297,6 +231,9 @@ class _AddNewProductState extends State<AddNewProductScreen>
             if (state is AddNewProductShowImagePickerState) {
               await _selectImageFromGallery();
             }
+            if (state is ShowCategoryPickerActionState) {
+              _showCategoryPicker(state.categories);
+            }
           },
         ),
       ),
@@ -309,29 +246,46 @@ class _AddNewProductState extends State<AddNewProductScreen>
     );
   }
 
-  Widget _selectCategoryButton(List<String> categories) => OutlinedButton(
+  Widget _addProductButton(String selectedCategoryId) => Center(
+        child: MaterialButton(
+          onPressed: (_selectedImage != null &&
+                  _nameEditText.isNotEmpty &&
+                  _priceEditText.isNotEmpty &&
+                  _weightEditText.isNotEmpty)
+              ? () {
+                  context
+                      .read<AddNewProductBloc>()
+                      .add(AddNewProductOnSendEvent(
+                        _selectedImage!,
+                        selectedCategoryId,
+                      ));
+                }
+              : null,
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          minWidth: fillMaxWidth(context) * 0.77,
+          height: fillMaxHeight(context) * 0.05,
+          elevation: 4.0,
+          disabledColor: Theme.of(context).colorScheme.surfaceVariant,
+          disabledTextColor: Theme.of(context).colorScheme.onSurfaceVariant,
+          disabledElevation: 2.0,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                width: 2.0),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: TextView(
+            text: "Add product",
+            textColor: Theme.of(context).colorScheme.onSecondaryContainer,
+          ),
+        ),
+      );
+
+  Widget _selectCategoryButton(List<String> categoryNames) => OutlinedButton(
         onPressed: () {
-          showPopUp(
-            context,
-            CupertinoPicker(
-              magnification: 1.5,
-              squeeze: 1.2,
-              useMagnifier: true,
-              itemExtent: kItemExtent,
-              scrollController: FixedExtentScrollController(
-                initialItem: _selectedCategory,
-              ),
-              onSelectedItemChanged: (selectedItem) {
-                setState(() {
-                  _selectedCategory = selectedItem;
-                });
-              },
-              children: List<Widget>.generate(
-                categories.length,
-                (index) => Center(child: Text(categories[index])),
-              ),
-            ),
-          );
+          context
+              .read<AddNewProductBloc>()
+              .add(AddNewProductOnShowCategoryPickerEvent(categoryNames));
         },
         style: OutlinedButton.styleFrom(
             side: BorderSide(
@@ -346,11 +300,37 @@ class _AddNewProductState extends State<AddNewProductScreen>
               fillMaxHeight(context) * 0.07,
             )),
         child: TextView(
-          text: categories[_selectedCategory],
+          text: categoryNames[_selectedCategory],
           textSize: 17.0,
           textColor: Theme.of(context).colorScheme.onBackground,
         ),
       );
+
+  void _showCategoryPicker(List<String> categoryNames) {
+    showPopUp(
+      context,
+      CupertinoPicker(
+        magnification: 1.5,
+        squeeze: 1.2,
+        useMagnifier: true,
+        itemExtent: kItemExtent,
+        scrollController: FixedExtentScrollController(
+          initialItem: _selectedCategory,
+        ),
+        onSelectedItemChanged: (selectedItem) {
+          context
+              .read<AddNewProductBloc>()
+              .add(AddNewProductOnLoadCategoriesEvent(
+                categoryIndex: selectedItem,
+              ));
+        },
+        children: List<Widget>.generate(
+          categoryNames.length,
+          (index) => Center(child: Text(categoryNames[index])),
+        ),
+      ),
+    );
+  }
 
   Future<void> _selectImageFromGallery() async {
     final XFile? returnedImage =

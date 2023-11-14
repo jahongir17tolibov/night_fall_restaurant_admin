@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:night_fall_restaurant_admin/data/local/entities/menu_categories_entity.dart';
 import 'package:night_fall_restaurant_admin/data/remote/model/editing_menu_product_model.dart';
 import 'package:night_fall_restaurant_admin/domain/use_cases/add_new_product_to_fire_store_use_case.dart';
 import 'package:night_fall_restaurant_admin/domain/use_cases/get_menu_categories_use_case.dart';
@@ -32,6 +31,8 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
     on<AddNewProductOnLoadCategoriesEvent>(_getCategoriesEvent);
 
     on<AddNewProductOnSendEvent>(_addNewProductEvent);
+
+    on<AddNewProductOnShowCategoryPickerEvent>(_showCategoryPickerEvent);
   }
 
   static const String _lottiePath = 'assets/anim/success_anim.json';
@@ -42,6 +43,7 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
   final TextEditingController _nameEditingController = TextEditingController();
   final TextEditingController _priceEditingController = TextEditingController();
   final TextEditingController _weightEditController = TextEditingController();
+  int _selectedCategoryIndex = 0;
 
   TextEditingController get nameEditingController => _nameEditingController;
 
@@ -49,11 +51,14 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
 
   TextEditingController get weightEditingController => _weightEditController;
 
+  int get selectedCategoryIndex => _selectedCategoryIndex;
+
   Future<void> _addNewProductEvent(
     AddNewProductOnSendEvent event,
     Emitter<AddNewProductState> emit,
   ) async {
     const String addedWhenThereIsInternet = 'Product Added successfully!!!';
+    final int makeFireId = DateTime.now().millisecondsSinceEpoch;
     try {
       final hasConnection = await InternetConnectionChecker().hasConnection;
       emit(AddNewProductLoadingState());
@@ -65,6 +70,7 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
 
         final EditingMenuProductsModel hasConnectionProductModel =
             _productsModel(
+          fireId: makeFireId,
           imageUrlOrPath: getUrlOfImage,
           categoryId: event.categoryId,
         );
@@ -79,6 +85,7 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
         /// send to native code side
         final EditingMenuProductsModel noConnectionProductModel =
             _productsModel(
+          fireId: makeFireId,
           imageUrlOrPath: event.imageFile.path,
           categoryId: event.categoryId,
         );
@@ -93,9 +100,24 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
     AddNewProductOnLoadCategoriesEvent event,
     Emitter<AddNewProductState> emit,
   ) async {
-    emit(AddNewProductLoadingState());
-    final categories = await getMenuCategoriesUseCase.call();
-    emit(AddNewProductSuccessState(categories));
+    try {
+      final categories = await getMenuCategoriesUseCase.call();
+
+      final List<String> categoryNames =
+          categories.map((e) => e.categoryName).toList();
+      final List<String> categoryIds =
+          categories.map((e) => e.categoryId).toList();
+
+      _pickerSelection(event.categoryIndex);
+
+      emit(AddNewProductSuccessState(
+        categoryNames: categoryNames,
+        categoryIds: categoryIds,
+        selectedCategoryItem: event.categoryIndex,
+      ));
+    } on Exception catch (e) {
+      emit(AddNewProductErrorState(e.toString()));
+    }
   }
 
   Future<void> _showImagePickerEvent(
@@ -103,6 +125,13 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
     Emitter<AddNewProductState> emit,
   ) async {
     emit(AddNewProductShowImagePickerState());
+  }
+
+  Future<void> _showCategoryPickerEvent(
+    AddNewProductOnShowCategoryPickerEvent event,
+    Emitter<AddNewProductState> emit,
+  ) async {
+    emit(ShowCategoryPickerActionState(event.categories));
   }
 
   Future<void> _navigateBackEvent(
@@ -139,14 +168,20 @@ class AddNewProductBloc extends Bloc<AddNewProductEvent, AddNewProductState> {
   }
 
   EditingMenuProductsModel _productsModel({
+    required int fireId,
     required String imageUrlOrPath,
     required String categoryId,
   }) =>
       EditingMenuProductsModel(
+        fireId: fireId.toString(),
         name: _nameEditingController.text,
         image: imageUrlOrPath,
         price: "${_priceEditingController.text}so`m",
         weight: "${_weightEditController.text}g",
         productCategoryId: categoryId,
       );
+
+  void _pickerSelection(int selectedItem) {
+    _selectedCategoryIndex = selectedItem;
+  }
 }

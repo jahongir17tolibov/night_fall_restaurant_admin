@@ -12,7 +12,7 @@ class FireBaseServiceImpl extends FireBaseService {
   static const String _ordersCollectionPath = 'orders';
   static const String _menuCollectionPath = 'products_menu';
   static const String _menuDocsPath = '1_categories';
-  static const String _menuProductsField = "menu_products";
+  static const String _menuProductsField = 'menu_products';
 
   @override
   Future<List<GetOrdersListResponse>> getOrdersList() async {
@@ -81,16 +81,20 @@ class FireBaseServiceImpl extends FireBaseService {
       List<dynamic> currentMenuProductsField =
           documentSnapshot[_menuProductsField];
 
-      int index = currentMenuProductsField
-          .indexWhere((menuProduct) => menuProduct["name"] == product.name);
+      int index = currentMenuProductsField.indexWhere(
+          (menuProduct) => menuProduct["fireId"] == product.fireId);
+      print(index);
 
       if (index != -1) {
+        print("index != -1      works");
         Map<String, dynamic> menuProductMap = currentMenuProductsField[index];
-        menuProductMap.addAll(product.toMap());
+        menuProductMap = product.toMap();
         currentMenuProductsField[index] = menuProductMap;
 
         await documentReference
             .update({_menuProductsField: currentMenuProductsField});
+      } else {
+        throw Exception('Product not found');
       }
     } on FirebaseException catch (e) {
       throw Exception(e);

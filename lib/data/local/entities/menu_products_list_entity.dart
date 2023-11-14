@@ -4,6 +4,7 @@ import 'package:night_fall_restaurant_admin/data/remote/model/menu_products/menu
 
 class MenuProductsEntity {
   static const CM_ID = "menu_products_id";
+  static const CM_PRODUCT_FIRE_ID = "fire_id";
   static const CM_PRODUCT_NAME = "product_name";
   static const CM_IMAGE = "product_image";
   static const CM_PRICE = "product_price";
@@ -12,6 +13,7 @@ class MenuProductsEntity {
   static const TABLE_NAME = 'menu_products_entity';
 
   final int? id;
+  final String fireId;
   final String name;
   final String image;
   final String price;
@@ -20,6 +22,7 @@ class MenuProductsEntity {
 
   MenuProductsEntity({
     this.id,
+    required this.fireId,
     required this.name,
     required this.image,
     required this.price,
@@ -29,6 +32,7 @@ class MenuProductsEntity {
 
   Map<String, dynamic> toMap() => <String, dynamic>{
         CM_ID: id,
+        CM_PRODUCT_FIRE_ID: fireId,
         CM_PRODUCT_NAME: name,
         CM_IMAGE: image,
         CM_PRICE: price,
@@ -39,6 +43,7 @@ class MenuProductsEntity {
   factory MenuProductsEntity.fromMap(Map<String, dynamic> map) =>
       MenuProductsEntity(
         id: map[CM_ID],
+        fireId: map[CM_PRODUCT_FIRE_ID],
         name: map[CM_PRODUCT_NAME],
         image: map[CM_IMAGE],
         price: map[CM_PRICE],
@@ -50,6 +55,7 @@ class MenuProductsEntity {
     required MenuList menuList,
   }) =>
       MenuProductsEntity(
+        fireId: menuList.fireId,
         name: menuList.name,
         image: menuList.image,
         price: menuList.price,
@@ -59,6 +65,7 @@ class MenuProductsEntity {
 
   MenuProductsEntity copyWith({
     int? id,
+    required String? fireId,
     required String? name,
     required String? image,
     required String? price,
@@ -67,6 +74,7 @@ class MenuProductsEntity {
   }) =>
       MenuProductsEntity(
         id: id ?? this.id,
+        fireId: fireId ?? this.fireId,
         name: name ?? this.name,
         image: image ?? this.image,
         price: price ?? this.price,
@@ -79,6 +87,7 @@ class MenuProductsEntity {
       identical(this, other) ||
       other is MenuProductsEntity &&
           runtimeType == other.runtimeType &&
+          fireId == other.fireId &&
           id == other.id &&
           name == other.name &&
           image == other.image &&
@@ -89,6 +98,7 @@ class MenuProductsEntity {
   @override
   int get hashCode =>
       id.hashCode ^
+      fireId.hashCode ^
       name.hashCode ^
       image.hashCode ^
       price.hashCode ^

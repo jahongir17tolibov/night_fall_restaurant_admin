@@ -9,9 +9,11 @@ import 'package:night_fall_restaurant_admin/feature/add_new_product/add_new_prod
 import 'package:night_fall_restaurant_admin/feature/editing_product/editing_product_screen.dart';
 import 'package:night_fall_restaurant_admin/feature/products/bloc/products_bloc.dart';
 import 'package:night_fall_restaurant_admin/utils/helpers.dart';
+import 'package:night_fall_restaurant_admin/utils/ui_components/cached_image_view.dart';
 import 'package:night_fall_restaurant_admin/utils/ui_components/cupertino_dialog.dart';
 import 'package:night_fall_restaurant_admin/utils/ui_components/error_widget.dart';
 import 'package:night_fall_restaurant_admin/utils/ui_components/shimmer_gradient.dart';
+import 'package:night_fall_restaurant_admin/utils/ui_components/show_snack_bar.dart';
 import 'package:night_fall_restaurant_admin/utils/ui_components/standart_text.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -28,10 +30,22 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen>
     with TickerProviderStateMixin {
+  late AnimationController _animationController;
+
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
     context.read<ProductsBloc>().add(ProductsOnGetMenuProductsEvent());
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -82,6 +96,9 @@ class _ProductsScreenState extends State<ProductsScreen>
             if (state is ProductsNavigateToAddNewProductScreenActionState) {
               AddNewProductScreen.open(context);
             }
+            if (state is ProductsShowSnackMessageActionState) {
+              showSnackBar(state.message, context);
+            }
             if (state is ProductsShowDeleteProductDialogActionState) {
               showCustomDialog(
                 context: context,
@@ -118,22 +135,11 @@ class _ProductsScreenState extends State<ProductsScreen>
     /// imageView
     Widget productsImage = ClipRRect(
       borderRadius: BorderRadius.circular(14.0),
-      child: CachedNetworkImage(
+      child: CachedImageView(
         imageUrl: item.image,
         width: fillMaxWidth(context) * 0.25,
         height: fillMaxHeight(context) * 0.12,
-        fit: BoxFit.cover,
-        progressIndicatorBuilder: (context, url, downloadProgress) => Container(
-          decoration: BoxDecoration(
-            gradient: shimmerEffect(
-              context,
-              AnimationController(
-                vsync: this,
-                duration: const Duration(seconds: 2),
-              )..repeat(reverse: true),
-            ),
-          ),
-        ),
+        controller: _animationController,
       ),
     );
 

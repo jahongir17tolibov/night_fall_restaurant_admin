@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:meta/meta.dart';
 import 'package:night_fall_restaurant_admin/core/result/result_handle.dart';
 import 'package:night_fall_restaurant_admin/data/local/entities/order_products_entity.dart';
 import 'package:night_fall_restaurant_admin/data/local/entities/orders_list_entity.dart';
+import 'package:night_fall_restaurant_admin/data/shared/shared_preferences.dart';
 import 'package:night_fall_restaurant_admin/domain/use_cases/clear_all_orders_use_case.dart';
 import 'package:night_fall_restaurant_admin/domain/use_cases/get_order_products_by_order_id_use_case.dart';
 import 'package:night_fall_restaurant_admin/domain/use_cases/get_orders_list_from_fire_store_use_case.dart';
@@ -36,6 +38,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     on<HomeOnGetOrderProductsEvent>(_getOrderProductsByIdEvent);
   }
+
+  bool _themeModeState = false;
+
+  bool get themeModeState => _themeModeState;
 
   Future<void> _getOrdersListEvent(
     HomeOnGetOrdersListEvent event,
@@ -98,7 +104,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _regenrateList(
-    ReloadEvent event,
+    // ReloadEvent event,
     Emitter<HomeState> emit,
   ) async {
     List<String> items = [];
@@ -107,5 +113,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     // emit(HomeSuccessState(items));
+  }
+
+  Future<void> _changeAppTheme(
+    ThemeChangedEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    _themeModeState = event.isDark;
+    if (event.isDark) {
+      ThemeMode.dark;
+    } else {
+      ThemeMode.light;
+    }
+
+    emit(ThemeChangeState(event.isDark));
   }
 }

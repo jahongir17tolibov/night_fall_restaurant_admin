@@ -5,6 +5,7 @@ import 'package:night_fall_restaurant_admin/data/remote/model/orders/order_produ
 class OrderProductsEntity {
   static const String CM_ID = "id";
   static const String CM_ORDER_UNIQUE_ID = "from_order_uniqueId";
+  static const String CM_ORDER_PRODUCT_FIRE_ID = "fire_id";
   static const String CM_PRODUCT_NAME = "product_name";
   static const String CM_PRICE = "image";
   static const String CM_IMAGE = "price";
@@ -13,6 +14,7 @@ class OrderProductsEntity {
   static const String TABLE_NAME = "order_products_entity";
 
   int? id;
+  final String fireId;
   final String fromOrderUniqueId;
   final String productName;
   final String image;
@@ -22,6 +24,7 @@ class OrderProductsEntity {
 
   OrderProductsEntity({
     this.id,
+    required this.fireId,
     required this.fromOrderUniqueId,
     required this.productName,
     required this.price,
@@ -32,6 +35,7 @@ class OrderProductsEntity {
 
   Map<String, dynamic> toMap() => <String, dynamic>{
         CM_ID: id,
+        CM_ORDER_PRODUCT_FIRE_ID: fireId,
         CM_ORDER_UNIQUE_ID: fromOrderUniqueId,
         CM_PRODUCT_NAME: productName,
         CM_IMAGE: image,
@@ -43,6 +47,7 @@ class OrderProductsEntity {
   factory OrderProductsEntity.fromMap(Map<String, dynamic> map) =>
       OrderProductsEntity(
         id: map[CM_ID],
+        fireId: map[CM_ORDER_PRODUCT_FIRE_ID],
         fromOrderUniqueId: map[CM_ORDER_UNIQUE_ID],
         productName: map[CM_PRODUCT_NAME],
         image: map[CM_IMAGE],
@@ -55,6 +60,7 @@ class OrderProductsEntity {
     OrderProducts orderProducts,
   ) =>
       OrderProductsEntity(
+        fireId: orderProducts.fireId,
         fromOrderUniqueId: orderProducts.orderId,
         productName: orderProducts.productName,
         price: orderProducts.price,
@@ -70,6 +76,7 @@ class OrderProductsEntity {
           runtimeType == other.runtimeType &&
           id == other.id &&
           fromOrderUniqueId == other.fromOrderUniqueId &&
+          fireId == other.fireId &&
           productName == other.productName &&
           image == other.image &&
           price == other.price &&
@@ -80,6 +87,7 @@ class OrderProductsEntity {
   int get hashCode =>
       id.hashCode ^
       fromOrderUniqueId.hashCode ^
+      fireId.hashCode ^
       productName.hashCode ^
       weight.hashCode ^
       image.hashCode ^

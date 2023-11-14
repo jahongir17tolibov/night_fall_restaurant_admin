@@ -7,6 +7,8 @@ import androidx.room.Entity
 data class ProductEntity(
     @ColumnInfo(name = "id")
     val id: Int? = null,
+    @ColumnInfo(name = "fire_id")
+    val fireId: String,
     @ColumnInfo(name = "name")
     val name: String,
     @ColumnInfo(name = "image")

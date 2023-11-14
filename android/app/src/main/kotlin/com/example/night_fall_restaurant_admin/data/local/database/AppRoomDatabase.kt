@@ -5,7 +5,11 @@ import androidx.room.RoomDatabase
 import com.example.night_fall_restaurant_admin.data.local.dao.ProductsDao
 import com.example.night_fall_restaurant_admin.data.local.entities.ProductEntity
 
-@Database(entities = [ProductEntity::class], version = AppRoomDatabase.DATABASE_VERSION)
+@Database(
+    entities = [ProductEntity::class],
+    version = AppRoomDatabase.DATABASE_VERSION,
+    exportSchema = false
+)
 abstract class AppRoomDatabase : RoomDatabase() {
 
     companion object {
